@@ -1,3 +1,4 @@
+import os
 from telegram.ext import Updater, ConversationHandler, CommandHandler, MessageHandler, Filters
 
 INITIAl, MIDDLE, FINAL = range(3)
@@ -31,7 +32,8 @@ def help(bot, updater):
 
 
 def main():
-    TOKEN = '813832634:AAG6FU2Bijm_1-XyEWDQRwbZCKhViVpQ7VI'
+    TOKEN = os.environ['TELEGRAM_TOKEN']
+    PORT = int(os.environ.get('PORT', '8443'))
     updater = Updater(TOKEN)
 
     dispatcher = updater.dispatcher
@@ -48,7 +50,9 @@ def main():
     dispatcher.add_handler(conv_handler)
     dispatcher.add_handler(command)
 
-    updater.start_polling()
+    # updater.start_polling()
+    updater.start_webhook(listen="0.0.0.0", port=PORT, url_path=TOKEN)
+    updater.bot.set_webhook("https://summerpractise.herokuapp.com/" + TOKEN)
     updater.idle()
 
 if __name__ == '__main__':
