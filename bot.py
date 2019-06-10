@@ -17,7 +17,7 @@ def upload_document(bot, updater):
 
     client = session.Session().client('s3',
                                       region_name='fra1',
-                                      endpoint_url='https://fra1.digitaloceanspaces.com',
+                                      endpoint_url='https://summerbot.fra1.digitaloceanspaces.com',
                                       aws_access_key_id=os.environ['DO_PUBLIC'],
                                       aws_session_token=os.environ['DO_SECRET'])
     print('past client  ')
