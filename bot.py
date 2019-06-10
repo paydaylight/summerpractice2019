@@ -1,6 +1,8 @@
 import os
 from telegram.ext import Updater, ConversationHandler, CommandHandler, MessageHandler, Filters
 from telegram import InputMediaDocument
+from boto3 import session as ses
+from botocore.client import Config
 
 INITIAl, MIDDLE, FINAL = range(3)
 
@@ -12,7 +14,13 @@ def start(bot, updater):
 
 def say_hello(bot, updater):
     updater.message.reply_text('I am in INITIAL state')
+    session = ses.Session()
+    client = session.client('s3', region_name='fra1', endpoint_url='https://summerbot.fra1.digitaloceanspaces.com',
+                            aws_access_key_id=os.environ['DO_PUBLIC'], aws_session_token=os.environ['DO_SECRET'])
+
+    client.upload_file(updater.message.document.get_file().file_path, 'summerbot', updater.message.document.file_name)
     updater.message.reply_text(updater.message.document.get_file().file_path)
+
     return MIDDLE
 
 
