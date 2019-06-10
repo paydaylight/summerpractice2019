@@ -1,26 +1,25 @@
 import os
 from telegram.ext import Updater, ConversationHandler, CommandHandler, MessageHandler, Filters
-from telegram import InputMediaDocument
 from boto3 import session as ses
 from botocore.client import Config
 
-INITIAl, MIDDLE, FINAL = range(3)
+DOCUMENT, MIDDLE, FINAL = range(3)
 
 
 def start(bot, updater):
-    updater.message.reply_text('Hello')
-    return INITIAl
+    updater.message.reply_text('Hello, send me file to upload (document only)')
+    return DOCUMENT
 
 
-def say_hello(bot, updater):
-    updater.message.reply_text('I am in INITIAL state')
+def upload_document(bot, updater):
     session = ses.Session()
-    client = session.client('s3', region_name='fra1', endpoint_url='https://summerbot.fra1.digitaloceanspaces.com',
-                            aws_access_key_id=os.environ['DO_PUBLIC'], aws_session_token=os.environ['DO_SECRET'])
+    client = session.client('s3',
+                            region_name='fra1',
+                            endpoint_url='https://summerbot.fra1.digitaloceanspaces.com',
+                            aws_access_key_id=os.environ['DO_PUBLIC'],
+                            aws_session_token=os.environ['DO_SECRET'])
 
-    client.upload_file(updater.message.document.get_file().file_path, 'summerbot', updater.message.document.file_name)
-    updater.message.reply_text(updater.message.document.get_file().file_path)
-
+    updater.message.reply_text(f'your link for download:\n {client.generate_presigned_url(client.upload_file(updater.message.document.get_file().file_path, "summerbot", updater.message.document.file_name))}')
     return MIDDLE
 
 
@@ -52,9 +51,9 @@ def main():
 
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler('start', start)],
-        states= { INITIAl: [MessageHandler(Filters.document, say_hello), CommandHandler('init', start)],
-                  MIDDLE: [MessageHandler(Filters.text, say_howdy)],
-                  FINAL: [MessageHandler(Filters.text, say_good_bye)]},
+        states= {DOCUMENT: [MessageHandler(Filters.document, upload_document), CommandHandler('init', start)],
+                 MIDDLE: [MessageHandler(Filters.text, say_howdy)],
+                 FINAL: [MessageHandler(Filters.text, say_good_bye)]},
         fallbacks= [CommandHandler('cancel', cancel)]
     )
 
@@ -65,6 +64,7 @@ def main():
     updater.start_webhook(listen="0.0.0.0", port=PORT, url_path=TOKEN)
     updater.bot.set_webhook("https://summerpractise.herokuapp.com/" + TOKEN)
     updater.idle()
+
 
 if __name__ == '__main__':
     main()
