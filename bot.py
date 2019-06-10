@@ -1,7 +1,7 @@
 import os
 from telegram.ext import Updater, ConversationHandler, CommandHandler, MessageHandler, Filters
-from boto3 import session
-from botocore.client import Config
+import boto3
+from botocore.exceptions import ClientError
 
 DOCUMENT, MIDDLE, FINAL = range(3)
 
@@ -15,13 +15,13 @@ def upload_document(bot, updater):
     updater.message.reply_text(
         f'your link for download:\n it might be working \n {updater.message.document.get_file().file_path}')
 
-    client = session.Session().client('s3',
-                                      region_name='fra1',
-                                      endpoint_url='https://summerbot.fra1.digitaloceanspaces.com',
-                                      aws_access_key_id=os.environ['DO_PUBLIC'],
-                                      aws_session_token=os.environ['DO_SECRET'])
+    client = boto3.client('s3')
+    try:
+        response = client.upload_file(updater.message.document.get_file().file_path, updater.message.document.file_name)
+    except ClientError as e:
+        print(e)
     print('past client  ')
-    client.upload_file(updater.message.document.get_file().file_path, "summerbot", updater.message.document.file_name)
+    # client.upload_file(updater.message.document.get_file().file_path, "summerbot", updater.message.document.file_name)
     updater.message.reply_text(
         f'your link for download:\n it might be working \n {updater.message.document.get_file().file_path}')
     return MIDDLE
