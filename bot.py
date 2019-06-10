@@ -1,6 +1,6 @@
 import os
 from telegram.ext import Updater, ConversationHandler, CommandHandler, MessageHandler, Filters
-from boto3 import session as ses
+from boto3 import session
 from botocore.client import Config
 
 DOCUMENT, MIDDLE, FINAL = range(3)
@@ -14,13 +14,12 @@ def start(bot, updater):
 def upload_document(bot, updater):
     updater.message.reply_text(
         f'your link for download:\n it might be working \n {updater.message.document.get_file().file_path}')
-    session = ses.Session()
-    print('past session')
-    client = session.client('s3',
-                            region_name='fra1',
-                            endpoint_url='https://fra1.digitaloceanspaces.com',
-                            aws_access_key_id=os.environ['DO_PUBLIC'],
-                            aws_session_token=os.environ['DO_SECRET'])
+
+    client = session.Session().client('s3',
+                                      region_name='fra1',
+                                      endpoint_url='https://fra1.digitaloceanspaces.com',
+                                      aws_access_key_id=os.environ['DO_PUBLIC'],
+                                      aws_session_token=os.environ['DO_SECRET'])
     print('past client  ')
     client.upload_file(updater.message.document.get_file().file_path, "summerbot", updater.message.document.file_name)
     updater.message.reply_text(
