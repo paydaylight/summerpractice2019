@@ -12,7 +12,7 @@ def start(bot, updater):
 
 def say_hello(bot, updater):
     updater.message.reply_text('I am in INITIAL state')
-    updater.message.reply_text(updater.message)
+    updater.message.reply_text(updater.message.text)
     return MIDDLE
 
 
