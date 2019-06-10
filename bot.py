@@ -12,6 +12,7 @@ def start(bot, updater):
 
 
 def upload_document(bot, updater):
+    print('asdf')
     session = ses.Session()
     client = session.client('s3',
                             region_name='fra1',
