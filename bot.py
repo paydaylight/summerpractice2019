@@ -17,8 +17,8 @@ def upload_document(bot, updater):
 
     client = boto3.client('s3')
     try:
-        updater.message.document.get_file().download('/test')
-        print(client.upload_file(f'/test/{updater.message.document.file_name}', 'summerbot', updater.message.document.file_name))
+        updater.message.document.get_file().download
+        print(client.upload_file(updater.message.document.file_name, 'summerbot', updater.message.document.file_name))
     except ClientError as e:
         print(e)
     print('past client  ')
