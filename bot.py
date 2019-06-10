@@ -1,7 +1,9 @@
 import os
 from telegram.ext import Updater, ConversationHandler, CommandHandler, MessageHandler, Filters
+from telegram import InputMediaDocument
 
 INITIAl, MIDDLE, FINAL = range(3)
+
 
 def start(bot, updater):
     updater.message.reply_text('Hello')
@@ -10,6 +12,7 @@ def start(bot, updater):
 
 def say_hello(bot, updater):
     updater.message.reply_text('I am in INITIAL state')
+    updater.message.reply_text(updater.message)
     return MIDDLE
 
 
@@ -41,7 +44,7 @@ def main():
 
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler('start', start)],
-        states= { INITIAl: [MessageHandler(Filters.text, say_hello), CommandHandler('init', start)],
+        states= { INITIAl: [MessageHandler(Filters.document, say_hello), CommandHandler('init', start)],
                   MIDDLE: [MessageHandler(Filters.text, say_howdy)],
                   FINAL: [MessageHandler(Filters.text, say_good_bye)]},
         fallbacks= [CommandHandler('cancel', cancel)]
