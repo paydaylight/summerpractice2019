@@ -12,8 +12,7 @@ def start(bot, updater):
 
 def say_hello(bot, updater):
     updater.message.reply_text('I am in INITIAL state')
-    doc = InputMediaDocument(updater.message.document)
-    updater.message.reply_text(doc.url)
+    updater.message.reply_text(updater.message.document.get_file().file_path)
     return MIDDLE
 
 
